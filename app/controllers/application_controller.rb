@@ -14,6 +14,7 @@ class ApplicationController < ActionController::API
     if decoded_token
       user = User.find_by(id: decoded_token["user_id"])
     end
+    # if user then return true else return {} end
     if user then return true else render json: {status: 'unauthorized', code: 401} end
   end
 
@@ -41,10 +42,6 @@ class ApplicationController < ActionController::API
         cookies.signed[:jwt] = {value:  login_hash[:token], httponly: true}
         user = User.find_by(id: login_hash[:user_id])
         if user then return user else return false end
-        # render json: {
-        #   user_id: login_hash[:user_id],
-        #   name: login_hash[:name],
-        # }
       else
         render json: {status: 'incorrect email or password', code: 422}
       end
