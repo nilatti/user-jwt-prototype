@@ -2,15 +2,16 @@ class ApplicationController < ActionController::API
   include ActionController::Cookies
 
   def authenticate_cookie
-    if params[:query].include?('SIGN_IN_MUTATION') #when switch to react front end, maybe need to swithc this to using operation name
-      email = extract_email(params[:query])
-      password = extract_password(params[:query])
-      sign_in(email, password)
+    if params[:query].include?('SIGNIN_MUTATION') #when switch to react front end, maybe need to swithc this to using operation name
+      sign_in(params[:variables]["email"], params[:variables]["password"])
       return true
     end
 
     token = cookies.signed[:jwt]
+    puts token
     decoded_token = CoreModules::JsonWebToken.decode(token)
+    puts "token is"
+    puts decoded_token
     if decoded_token
       user = User.find_by(id: decoded_token["user_id"])
     end
@@ -25,14 +26,6 @@ class ApplicationController < ActionController::API
       user = User.find_by(id: decoded_token["user_id"])
     end
     if user then return user else return false end
-  end
-
-  def extract_email(query)
-    query.match(/{email\: \"([a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z0-9]{2,})\"/).captures[0]
-  end
-
-  def extract_password(query)
-    query.match(/password: \"(.+?)\"/).captures[0]
   end
 
   def sign_in(email, password)

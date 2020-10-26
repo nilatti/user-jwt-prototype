@@ -4,24 +4,22 @@ module Types
     field :me, Types::UserType, null: true
     field :theater, Types::TheaterType, null: true
     field :theaters, [Types::TheaterType], null: true
-    field :theater_connection, Types::TheaterConnectionType, null: true
-    #do
-      # puts "resolving connection"''
-      # resolve ->(_obj, _args, _ctx) {
-      #   Theater.all.order(args[:order_by])
-      # }
-    # end
+    # field :theater_connection, Types::TheaterConnectionType, null: true
+
     def me
+      puts "me called"
       if context[:current_user]
+        puts "current user"
         return context[:current_user]
       end
+      puts "no current user"
     end
     def theaters
       Theater.all
     end
-    def theater_connection
-      Theater.all
-    end
+    # def theater_connection
+    #   Theater.all
+    # end
     def users
       User.all
     end

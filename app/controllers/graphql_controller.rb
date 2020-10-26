@@ -1,6 +1,6 @@
 class GraphqlController < ApplicationController
   before_action do
-    # authenticate_cookie
+    authenticate_cookie
   end
   # If accessing from outside this domain, nullify the session
   # This allows for outside API access while preventing CSRF attacks,
