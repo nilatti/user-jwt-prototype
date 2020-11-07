@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::API
   include ActionController::Cookies
+  after_action :check_current_user
 
   def authenticate_cookie
     if params[:query].include?('SIGN_IN_MUTATION') #when switch to react front end, maybe need to swithc this to using operation name
@@ -49,6 +50,26 @@ class ApplicationController < ActionController::API
       end
     else
       render json: {status: 'specify email address and password', code: 422}
+    end
+  end
+
+  def sign_up(email, password)
+    login_hash = User.handle_login(email, password)
+    cookies.signed[:jwt] = {value: login_hash[:token], httponly: true}
+  end
+
+  def check_current_user
+    if response.body.include?('signUp')
+      email = response.body.match(/\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/)[0]
+      if email
+        user = User.find_by(email: email)
+        if user
+          login_hash = user.login_hash
+          if login_hash
+            cookies.signed[:jwt] = {value:  login_hash[:token], httponly: true}
+          end
+        end
+      end    
     end
   end
 end

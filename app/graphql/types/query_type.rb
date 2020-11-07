@@ -7,12 +7,9 @@ module Types
     # field :theater_connection, Types::TheaterConnectionType, null: true
 
     def me
-      puts "me called"
       if context[:current_user]
-        puts "current user"
         return context[:current_user]
       end
-      puts "no current user"
     end
     def theaters
       Theater.all
